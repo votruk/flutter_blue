@@ -324,3 +324,10 @@ const MtuSizeResponse$json = const {
   ],
 };
 
+const AndroidRefreshGatt = const {
+  '1': 'AndroidRefreshGatt',
+  '2': const [
+    const {'1': 'remote_id', '3': 1, '4': 1, '5': 9, '10': 'remoteId'},
+  ],
+};
+

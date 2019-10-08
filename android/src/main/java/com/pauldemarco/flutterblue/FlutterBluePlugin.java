@@ -540,6 +540,37 @@ public class FlutterBluePlugin implements MethodCallHandler, RequestPermissionsR
                 break;
             }
 
+            case "refresh":
+            {
+
+                byte[] data = call.arguments();
+                Protos.MtuSizeRequest request;
+                try {
+                    request = Protos.MtuSizeRequest.newBuilder().mergeFrom(data).build();
+                } catch (InvalidProtocolBufferException e) {
+                    result.error("RuntimeException", e.getMessage(), e);
+                    break;
+                }
+
+                BluetoothGatt gatt;
+                try {
+                    gatt = locateGatt(request.getRemoteId());
+                    int mtu = request.getMtu();
+                    if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+                        if(gatt.requestMtu(mtu)) {
+                            result.success(null);
+                        } else {
+                            result.error("requestMtu", "gatt.requestMtu returned false", null);
+                        }
+                    } else {
+                        result.error("requestMtu", "Only supported on devices >= API 21 (Lollipop). This device == " + Build.VERSION.SDK_INT, null);
+                    }
+                } catch(Exception e) {
+                    result.error("requestMtu", e.getMessage(), e);
+                }
+
+                break;
+            }
             default:
             {
                 result.notImplemented();
