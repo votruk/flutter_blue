@@ -18,7 +18,8 @@ A new flutter plugin project.
   s.dependency '!ProtoCompiler'
   s.framework = 'CoreBluetooth'
 
-  protoc = ENV['PWD'] + '/Pods/!ProtoCompiler/protoc'
+  # Fix was added for the issue: https://github.com/pauldemarco/flutter_blue/issues/292#issuecomment-510417473
+  protoc = ENV['PWD'] + '/ios/Pods/!ProtoCompiler/protoc'
   objc_out = 'gen'
   proto_in = '../protos'
   s.prepare_command = <<-CMD
