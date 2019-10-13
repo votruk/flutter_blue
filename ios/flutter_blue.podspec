@@ -31,7 +31,8 @@ A new flutter plugin project.
 
   s.subspec 'Protos' do |ss|
     ss.source_files = 'gen/**/*.pbobjc.{h,m}'
-    ss.header_mappings_dir = 'gen'
+    # Fix for the issue: https://github.com/pauldemarco/flutter_blue/issues/386#issuecomment-540876291
+    # ss.header_mappings_dir = 'gen'
     ss.requires_arc = false
     ss.dependency 'Protobuf'
   end
