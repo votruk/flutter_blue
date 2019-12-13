@@ -87,7 +87,7 @@ class FlutterBlue {
     final killStreams = <Stream>[];
     killStreams.add(_stopScanPill);
     if (timeout != null) {
-      killStreams.add(Observable.timer(null, timeout));
+      killStreams.add(TimerStream(null, timeout));
     }
 
     // Clear scan results list
@@ -102,10 +102,10 @@ class FlutterBlue {
       throw e;
     }
 
-    yield* Observable(FlutterBlue.instance._methodStream
+    yield* FlutterBlue.instance._methodStream
             .where((m) => m.method == "ScanResult")
-            .map((m) => m.arguments))
-        .takeUntil(Observable.merge(killStreams))
+            .map((m) => m.arguments)
+        .takeUntil(MergeStream(killStreams))
         .doOnDone(stopScan)
         .map((buffer) => new protos.ScanResult.fromBuffer(buffer))
         .map((p) {
