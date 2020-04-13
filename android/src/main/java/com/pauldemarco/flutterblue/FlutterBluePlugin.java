@@ -901,6 +901,7 @@ public class FlutterBluePlugin implements MethodCallHandler, RequestPermissionsR
                 new Runnable() {
                     @Override
                     public void run() {
+                        Log.d("AAAAAA", "Invoking method with name: " + name);
                         channel.invokeMethod(name, byteArray);
                     }
                 });
