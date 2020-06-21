@@ -122,12 +122,12 @@ class BluetoothCharacteristic {
     var result = await FlutterBlue.instance._channel
         .invokeMethod('writeCharacteristic', request.writeToBuffer());
 
-    if (type == CharacteristicWriteType.withoutResponse) {
-      if (returnValueOnSuccess) {
-        _value.add(value);
-      }
-      return result;
-    }
+//    if (type == CharacteristicWriteType.withoutResponse) {
+//      if (returnValueOnSuccess) {
+//        _value.add(value);
+//      }
+//      return result;
+//    }
 
     return FlutterBlue.instance._methodStream
         .where((m) => m.method == "WriteCharacteristicResponse")
