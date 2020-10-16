@@ -576,7 +576,7 @@ public class FlutterBluePlugin implements MethodCallHandler, RequestPermissionsR
                 byte[] manufacturerData = call.arguments();
 
                 AdvertiseData advertiseData = new AdvertiseData.Builder()
-                        .setIncludeDeviceName(true)
+                        .setIncludeDeviceName(false)
                         .addManufacturerData(65535, manufacturerData)
                         .build();
                 advertiser.startAdvertising(settingsBuilder.build(), advertiseData, mAdvertiseCallback);
