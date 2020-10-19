@@ -573,11 +573,13 @@ public class FlutterBluePlugin implements MethodCallHandler, RequestPermissionsR
                         .setTimeout(0) // will be turned on indefinitely
                         .setAdvertiseMode(ADVERTISE_MODE_BALANCED);
 
+                final int untitledCompanyManufacturerId = 65535;
+
                 byte[] manufacturerData = call.arguments();
 
                 AdvertiseData advertiseData = new AdvertiseData.Builder()
                         .setIncludeDeviceName(false)
-                        .addManufacturerData(65535, manufacturerData)
+                        .addManufacturerData(untitledCompanyManufacturerId, manufacturerData)
                         .build();
                 advertiser.startAdvertising(settingsBuilder.build(), advertiseData, mAdvertiseCallback);
                 return true;

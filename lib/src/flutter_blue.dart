@@ -153,14 +153,13 @@ class FlutterBlue {
 //      throw UnimplementedError();
 
 
-  Future<bool> startAdvertising(final List<int> manufacturerData){
-    final Uint8List data = Uint8List.fromList(manufacturerData);
+  Future<bool> startAdvertising(final Uint8List manufacturerData) {
 
     return _channel
-        .invokeMethod('startAdvertising', data);
+        .invokeMethod('startAdvertising', manufacturerData);
   }
 
-  Future<bool> stopAdvertising(){
+  Future<bool> stopAdvertising() {
     return _channel
         .invokeMethod('stopAdvertising');
   }
