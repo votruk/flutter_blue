@@ -73,6 +73,7 @@ public class FlutterBluePlugin implements MethodCallHandler, RequestPermissionsR
     private BluetoothAdapter mBluetoothAdapter;
     private final Map<String, BluetoothDeviceCache> mDevices = new HashMap<>();
     private LogLevel logLevel = LogLevel.EMERGENCY;
+    private static final int untitledCompanyManufacturerId = 65535;
 
     // Pending call and result for startScan, in the case where permissions are needed
     private MethodCall pendingCall;
@@ -572,8 +573,6 @@ public class FlutterBluePlugin implements MethodCallHandler, RequestPermissionsR
                 settingsBuilder.setConnectable(false)
                         .setTimeout(0) // will be turned on indefinitely
                         .setAdvertiseMode(ADVERTISE_MODE_BALANCED);
-
-                final int untitledCompanyManufacturerId = 65535;
 
                 byte[] manufacturerData = call.arguments();
 
