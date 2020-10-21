@@ -22,8 +22,7 @@ class BluetoothCharacteristic {
   }
 
   BehaviorSubject<List<int>> _value;
-
-  Stream<List<int>> get value => MergeStream([
+  Stream<List<int>> get value => Rx.merge([
         _value.stream,
         _onValueChangedStream,
       ]);
@@ -49,8 +48,6 @@ class BluetoothCharacteristic {
           .map((c) {
         // Update the characteristic with the new values
         _updateDescriptors(c.descriptors);
-//        _value.add(c.lastValue);
-//        print('c.lastValue: ${c.lastValue}');
         return c;
       });
 
@@ -111,11 +108,8 @@ class BluetoothCharacteristic {
     var result = await FlutterBlue.instance._channel.invokeMethod('writeCharacteristic', request.writeToBuffer());
 
     if (Platform.isIOS) {
-      if (type == CharacteristicWriteType.withoutResponse) {
-        if (returnValueOnSuccess) {
-          _value.add(value);
-        }
-        return result;
+    if (type == CharacteristicWriteType.withoutResponse) {
+      return result;
       }
     }
 
@@ -129,12 +123,10 @@ class BluetoothCharacteristic {
             (p.request.serviceUuid == request.serviceUuid))
         .first
         .then((w) => w.success)
-        .then((success) => (!success) ? throw new Exception('Failed to write the characteristic') : null)
-        .then((_) {
-      if (returnValueOnSuccess) {
-        _value.add(value);
-      }
-    }).then((_) => null);
+        .then((success) => (!success)
+            ? throw new Exception('Failed to write the characteristic')
+            : null)
+        .then((_) => null);
   }
 
   /// Sets notifications or indications for the value of a specified characteristic
@@ -159,9 +151,13 @@ class BluetoothCharacteristic {
         .then((p) => new BluetoothCharacteristic.fromProto(p.characteristic))
         .then((c) {
       _updateDescriptors(c.descriptors);
-      _value.add(c.lastValue);
       return (c.isNotifying == notify);
     });
+  }
+
+  @override
+  String toString() {
+    return 'BluetoothCharacteristic{uuid: $uuid, deviceId: $deviceId, serviceUuid: $serviceUuid, secondaryServiceUuid: $secondaryServiceUuid, properties: $properties, descriptors: $descriptors, value: ${_value?.value}';
   }
 }
 
@@ -203,4 +199,9 @@ class CharacteristicProperties {
         extendedProperties = p.extendedProperties,
         notifyEncryptionRequired = p.notifyEncryptionRequired,
         indicateEncryptionRequired = p.indicateEncryptionRequired;
+
+  @override
+  String toString() {
+    return 'CharacteristicProperties{broadcast: $broadcast, read: $read, writeWithoutResponse: $writeWithoutResponse, write: $write, notify: $notify, indicate: $indicate, authenticatedSignedWrites: $authenticatedSignedWrites, extendedProperties: $extendedProperties, notifyEncryptionRequired: $notifyEncryptionRequired, indicateEncryptionRequired: $indicateEncryptionRequired}';
+  }
 }
