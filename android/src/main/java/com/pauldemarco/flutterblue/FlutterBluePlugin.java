@@ -13,7 +13,6 @@ import android.bluetooth.BluetoothGatt;
 import android.bluetooth.BluetoothGattCallback;
 import android.bluetooth.BluetoothGattCharacteristic;
 import android.bluetooth.BluetoothGattDescriptor;
-import android.bluetooth.BluetoothGattServer;
 import android.bluetooth.BluetoothGattService;
 import android.bluetooth.BluetoothManager;
 import android.bluetooth.BluetoothProfile;
@@ -51,6 +50,11 @@ import io.flutter.plugin.common.MethodChannel.MethodCallHandler;
 import io.flutter.plugin.common.MethodChannel.Result;
 import io.flutter.plugin.common.PluginRegistry.Registrar;
 import io.flutter.plugin.common.PluginRegistry.RequestPermissionsResultListener;
+import android.bluetooth.le.AdvertiseCallback;
+import android.bluetooth.le.AdvertiseData;
+import android.bluetooth.le.AdvertiseSettings;
+import android.bluetooth.le.BluetoothLeAdvertiser;
+import static android.bluetooth.le.AdvertiseSettings.ADVERTISE_MODE_BALANCED;
 
 
 /**
@@ -69,6 +73,7 @@ public class FlutterBluePlugin implements MethodCallHandler, RequestPermissionsR
     private BluetoothAdapter mBluetoothAdapter;
     private final Map<String, BluetoothDeviceCache> mDevices = new HashMap<>();
     private LogLevel logLevel = LogLevel.EMERGENCY;
+    private static final int untitledCompanyManufacturerId = 65535;
 
     // Pending call and result for startScan, in the case where permissions are needed
     private MethodCall pendingCall;
@@ -146,6 +151,16 @@ public class FlutterBluePlugin implements MethodCallHandler, RequestPermissionsR
             case "isOn":
             {
                 result.success(mBluetoothAdapter.isEnabled());
+                break;
+            }
+
+            case "startAdvertising": {
+                result.success(startAdvertising(call));
+                break;
+            }
+
+            case "stopAdvertising": {
+                result.success(stopAdvertising());
                 break;
             }
 
@@ -547,6 +562,55 @@ public class FlutterBluePlugin implements MethodCallHandler, RequestPermissionsR
             }
         }
     }
+
+    private boolean startAdvertising(MethodCall call) {
+
+        if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.LOLLIPOP) {
+            BluetoothLeAdvertiser advertiser = mBluetoothAdapter.getBluetoothLeAdvertiser();
+
+            if (advertiser != null) {
+                AdvertiseSettings.Builder settingsBuilder = new AdvertiseSettings.Builder();
+                settingsBuilder.setConnectable(false)
+                        .setTimeout(0) // will be turned on indefinitely
+                        .setAdvertiseMode(ADVERTISE_MODE_BALANCED);
+
+                byte[] manufacturerData = call.arguments();
+
+                AdvertiseData advertiseData = new AdvertiseData.Builder()
+                        .setIncludeDeviceName(false)
+                        .addManufacturerData(untitledCompanyManufacturerId, manufacturerData)
+                        .build();
+                advertiser.startAdvertising(settingsBuilder.build(), advertiseData, mAdvertiseCallback);
+                return true;
+            }
+        }
+
+        return false;
+
+    }
+
+    private boolean stopAdvertising() {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+            BluetoothLeAdvertiser advertiser = mBluetoothAdapter.getBluetoothLeAdvertiser();
+            if (advertiser != null) {
+                advertiser.stopAdvertising(mAdvertiseCallback);
+                return true;
+            }
+        }
+        return false;
+    }
+
+    private AdvertiseCallback mAdvertiseCallback = new AdvertiseCallback() {
+        @Override
+        public void onStartSuccess(AdvertiseSettings settingsInEffect) {
+            Log.d(TAG, "Peripheral advertising started");
+        }
+
+        @Override
+        public void onStartFailure(int errorCode) {
+            Log.d(TAG, "Peripheral advertising failed: " + errorCode);
+        }
+    };
 
     @Override
     public boolean onRequestPermissionsResult(
