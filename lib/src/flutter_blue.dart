@@ -164,6 +164,18 @@ class FlutterBlue {
 //  }) =>
 //      throw UnimplementedError();
 
+
+  Future<bool> startAdvertising(final Uint8List manufacturerData) {
+
+    return _channel
+        .invokeMethod('startAdvertising', manufacturerData);
+  }
+
+  Future<bool> stopAdvertising() {
+    return _channel
+        .invokeMethod('stopAdvertising');
+  }
+
   /// Sets the log level of the FlutterBlue instance
   /// Messages equal or below the log level specified are stored/forwarded,
   /// messages above are dropped.
