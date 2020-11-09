@@ -572,7 +572,7 @@ public class FlutterBluePlugin implements MethodCallHandler, RequestPermissionsR
                 AdvertiseSettings.Builder settingsBuilder = new AdvertiseSettings.Builder();
                 settingsBuilder.setConnectable(false)
                         .setTimeout(0) // will be turned on indefinitely
-                        .setAdvertiseMode(ADVERTISE_MODE_BALANCED);
+                        .setAdvertiseMode(ADVERTISE_MODE_LOW_LATENCY);
 
                 byte[] manufacturerData = call.arguments();
 
