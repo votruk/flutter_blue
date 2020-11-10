@@ -55,6 +55,7 @@ import android.bluetooth.le.AdvertiseData;
 import android.bluetooth.le.AdvertiseSettings;
 import android.bluetooth.le.BluetoothLeAdvertiser;
 import static android.bluetooth.le.AdvertiseSettings.ADVERTISE_TX_POWER_MEDIUM;
+import static android.bluetooth.le.AdvertiseSettings.ADVERTISE_TX_POWER_HIGH;
 
 
 /**
@@ -572,7 +573,8 @@ public class FlutterBluePlugin implements MethodCallHandler, RequestPermissionsR
                 AdvertiseSettings.Builder settingsBuilder = new AdvertiseSettings.Builder();
                 settingsBuilder.setConnectable(false)
                         .setTimeout(0) // will be turned on indefinitely
-                        .setAdvertiseMode(ADVERTISE_TX_POWER_MEDIUM);
+                        .setAdvertiseMode(ADVERTISE_TX_POWER_MEDIUM)
+                        .setTxPowerLevel(ADVERTISE_TX_POWER_HIGH);
 
                 byte[] manufacturerData = call.arguments();
 
